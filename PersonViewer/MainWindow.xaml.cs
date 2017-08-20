@@ -23,6 +23,8 @@ using PersonViewer.Common;
 using System.Data.OleDb;
 
 using System.IO;
+using PersonViewer.Databases;
+using PersonViewer.Interfaces;
 
 namespace PersonViewer
 {
@@ -42,47 +44,37 @@ namespace PersonViewer
 
         private void lvUsers_Loaded(object sender, RoutedEventArgs e)
         {
-            RegistryKey _regSql = Registry.LocalMachine.OpenSubKey(Common.Constants.SqlServerRegistry, false);
-            //RegistryKey _regCsv = Registry.LocalMachine.OpenSubKey(Common.Constants.CsvRegistry, false);
-            ConnectionStringSettings connectionStringSettings = null;
-            DbProviderFactory providerFactory = null;
-            
-            if (_regSql == null)
+            DbPickerFactory pickerFactory = new DbPickerFactory();
+            IDbConnection connection = null;
+
+            // To check the csv, just make the if condition == to null
+            if (Registry.LocalMachine.OpenSubKey(Constants.SqlServerRegistry, false) != null)
             {
-                connectionStringSettings = ConfigurationManager.ConnectionStrings[Constants.SqlServer];
-                providerFactory = new DbPickerFactory().DbmsSelector(connectionStringSettings);
+                connection = pickerFactory.CreateDbClasses(Constants.SqlServerClient).ConnectToDatabase(
+                    ConfigurationManager.ConnectionStrings[Constants.SqlServer]);
+                connection.ConnectionString = ConfigurationManager.ConnectionStrings[Constants.SqlServer].ConnectionString;
+                this.ViewData(connection);
             }
-            else if (Constants.FilePath != null)
+            else
             {
-                
-                connectionStringSettings = ConfigurationManager.ConnectionStrings[Constants.CsvClient];
-                providerFactory = new DbPickerFactory().DbmsSelector(connectionStringSettings);
+                this.GetTextFileFormatCsv();
             }
 
-            //this.Get();
-            this.ViewData(connectionStringSettings,providerFactory);
-            //
+            
             
         }
 
-        public void Get()
-        {
-            string fileName = @"C:\Users\Stephen\Documents\Visual Studio 2013\Projects\Self Projects\" +
-                @"\PersonViewer\PersonViewer\OleDB\Persons.csv";
-            
-            FileInfo file = new FileInfo(fileName);
-            //string connectionString =
-            //    new OleDbConnection("Provider=Microsoft.Jet.OleDb.4.0; Data Source = " +
-            //    System.IO.Path.GetDirectoryName(fileName) + "; Extended Properties = \"Text;HDR=YES;FMT=Delimited\"").ToString();
+        public void GetTextFileFormatCsv()
+        {   
+            FileInfo file = new FileInfo(Constants.FilePath);
             
             //working
-            using (OleDbConnection con = new OleDbConnection("Provider=Microsoft.Jet.OLEDB.4.0;Data Source=\"" +
+            using (OleDbConnection connection = new OleDbConnection("Provider=Microsoft.Jet.OLEDB.4.0;Data Source=\"" +
                 file.DirectoryName + "\"; Extended Properties='text;HDR=Yes;FMT=Delimited(,)';"))
-            
             using (OleDbCommand cmd = new OleDbCommand(string.Format
-                                  ("SELECT * FROM [{0}]", file.Name), con))
+                                  ("SELECT * FROM [{0}]", file.Name), connection))
             {
-                con.Open();
+                connection.Open();
                 using(OleDbDataReader reader = cmd.ExecuteReader())
                 {
                     List<Person> list = new List<Person>();
@@ -96,19 +88,17 @@ namespace PersonViewer
                 }
             }
         }
-        private void ViewData(ConnectionStringSettings connectionStringSettings, DbProviderFactory providerFactory)
+        public void ViewData(IDbConnection database)
         {
             try
             {
-                using (IDbConnection database = providerFactory.CreateConnection())
                 using (IDbCommand command = database.CreateCommand())
                 {
-                    database.ConnectionString = connectionStringSettings.ToString();
+                    database.Open();
+
                     command.CommandType = CommandType.Text;
                     command.CommandText = "SELECT * FROM dbo.Person";
 
-                    database.Open();
-                    
                     using (IDataReader reader = command.ExecuteReader())
                     {
                         List<Person> list = new List<Person>();

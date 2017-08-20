@@ -6,22 +6,20 @@ using System.Threading.Tasks;
 using System.Data.Common;
 using System.Configuration;
 using PersonViewer.Common;
+using PersonViewer.Interfaces;
+using PersonViewer.Databases;
 
 
 namespace PersonViewer.FactoryPattern
 {
     public class DbPickerFactory
     {
-        public DbProviderFactory DbmsSelector(ConnectionStringSettings identifier)
-        { 
-            switch(identifier.ProviderName)
+        public IDbConnect CreateDbClasses(string dbClasses)
+        {
+            switch (dbClasses)
             {
-                case Constants.SqlClient :
-                    return DbProviderFactories.GetFactory(identifier.ProviderName);
-                case Constants.MySql :
-                    return DbProviderFactories.GetFactory(identifier.ProviderName);
-                case Constants.OleDb:
-                    return DbProviderFactories.GetFactory(identifier.ProviderName);
+                case Constants.SqlServerClient:
+                    return new SqlServerDatabase();
             }
             return null;
         }

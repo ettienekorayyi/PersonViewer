@@ -64,7 +64,9 @@
     </Compile>
     <Compile Include="Common\Constants.cs" />
     <Compile Include="Common\Utility.cs" />
+    <Compile Include="Databases\SqlServerDatabase.cs" />
     <Compile Include="FactoryPattern\DbPickerFactory.cs" />
+    <Compile Include="Interfaces\IDbConnect.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -101,6 +103,7 @@
   <ItemGroup>
     <WCFMetadata Include="Service References\" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
