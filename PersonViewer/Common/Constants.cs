@@ -21,10 +21,11 @@ namespace PersonViewer.Common
 
         // Data Provider
         public const string SqlServerClient = "System.Data.SqlClient";
-        
-        
-        // Registry path                
+        public const string MySqlClient = "MySqlClient";
+
+        // Registry path                Software\\Wow6432Node\\MySQL AB\\MySQL Connector\\Net
         public const string SqlServerRegistry = @"SOFTWARE\Microsoft\Microsoft SQL Server\120\Tools\ClientSetup";
+        public const string MySqlRegistry = @"Computer\HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\MySQL AB\MySQL Connector\Net";
 
         
     }

@@ -34,9 +34,11 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="MySql.Data, Version=6.9.9.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Management" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -64,6 +66,8 @@
     </Compile>
     <Compile Include="Common\Constants.cs" />
     <Compile Include="Common\Utility.cs" />
+    <Compile Include="TypeTextFile\CsvFileFormat.cs" />
+    <Compile Include="Databases\MySqlDatabase.cs" />
     <Compile Include="Databases\SqlServerDatabase.cs" />
     <Compile Include="FactoryPattern\DbPickerFactory.cs" />
     <Compile Include="Interfaces\IDbConnect.cs" />
@@ -98,7 +102,9 @@
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Service References\" />

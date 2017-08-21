@@ -20,11 +20,12 @@ using Microsoft.Win32;
 using PersonViewer.FactoryPattern;
 using System.Data.Common;
 using PersonViewer.Common;
-using System.Data.OleDb;
+//using System.Data.OleDb;
 
-using System.IO;
+//using System.IO;
 using PersonViewer.Databases;
 using PersonViewer.Interfaces;
+using MySql.Data.MySqlClient;
 
 namespace PersonViewer
 {
@@ -47,47 +48,31 @@ namespace PersonViewer
             DbPickerFactory pickerFactory = new DbPickerFactory();
             IDbConnection connection = null;
 
-            // To check the csv, just make the if condition == to null
-            if (Registry.LocalMachine.OpenSubKey(Constants.SqlServerRegistry, false) != null)
+            // To check the csv on the else statement, just make the if condition == to null
+            if (Registry.LocalMachine.OpenSubKey(Constants.SqlServerRegistry, false) == null)
             {
                 connection = pickerFactory.CreateDbClasses(Constants.SqlServerClient).ConnectToDatabase(
                     ConfigurationManager.ConnectionStrings[Constants.SqlServer]);
                 connection.ConnectionString = ConfigurationManager.ConnectionStrings[Constants.SqlServer].ConnectionString;
                 this.ViewData(connection);
             }
+            //if (Registry.LocalMachine.OpenSubKey(Constants.MySqlRegistry) == null)
+            //{
+            //    connection = pickerFactory.CreateDbClasses(Constants.MySqlClient).ConnectToDatabase(
+            //        ConfigurationManager.ConnectionStrings[Constants.MySql]);
+            //    connection.ConnectionString = ConfigurationManager.ConnectionStrings[Constants.MySql].ConnectionString;
+            //    this.ViewData(connection);
+            //}
             else
             {
-                this.GetTextFileFormatCsv();
+                lvUsers.ItemsSource = new TypeTextFile.CsvFileFormat().GetTextFileFormatCsv();
             }
 
             
             
         }
 
-        public void GetTextFileFormatCsv()
-        {   
-            FileInfo file = new FileInfo(Constants.FilePath);
-            
-            //working
-            using (OleDbConnection connection = new OleDbConnection("Provider=Microsoft.Jet.OLEDB.4.0;Data Source=\"" +
-                file.DirectoryName + "\"; Extended Properties='text;HDR=Yes;FMT=Delimited(,)';"))
-            using (OleDbCommand cmd = new OleDbCommand(string.Format
-                                  ("SELECT * FROM [{0}]", file.Name), connection))
-            {
-                connection.Open();
-                using(OleDbDataReader reader = cmd.ExecuteReader())
-                {
-                    List<Person> list = new List<Person>();
-                    while(reader.Read())
-                        list.Add(new Person
-                        {
-                            Id = int.Parse(reader[0].ToString()),
-                            Name = reader[1].ToString()
-                        });
-                    lvUsers.ItemsSource = list;
-                }
-            }
-        }
+        
         public void ViewData(IDbConnection database)
         {
             try
@@ -114,6 +99,8 @@ namespace PersonViewer
                 MessageBox.Show(nullException.Message);
             }
         }
+
+        
 
     }
 }

@@ -20,6 +20,8 @@ namespace PersonViewer.FactoryPattern
             {
                 case Constants.SqlServerClient:
                     return new SqlServerDatabase();
+                case Constants.MySqlClient:
+                    return new MySqlDatabase();
             }
             return null;
         }
