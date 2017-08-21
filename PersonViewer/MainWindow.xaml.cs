@@ -49,20 +49,20 @@ namespace PersonViewer
             IDbConnection connection = null;
 
             // To check the csv on the else statement, just make the if condition == to null
-            if (Registry.LocalMachine.OpenSubKey(Constants.SqlServerRegistry, false) == null)
+            if (Registry.LocalMachine.OpenSubKey(Constants.SqlServerRegistry, false) != null)
             {
                 connection = pickerFactory.CreateDbClasses(Constants.SqlServerClient).ConnectToDatabase(
                     ConfigurationManager.ConnectionStrings[Constants.SqlServer]);
                 connection.ConnectionString = ConfigurationManager.ConnectionStrings[Constants.SqlServer].ConnectionString;
-                this.ViewData(connection);
+                lvUsers.ItemsSource = new Utility().ExecuteQuery(connection);
             }
-            //if (Registry.LocalMachine.OpenSubKey(Constants.MySqlRegistry) == null)
-            //{
-            //    connection = pickerFactory.CreateDbClasses(Constants.MySqlClient).ConnectToDatabase(
-            //        ConfigurationManager.ConnectionStrings[Constants.MySql]);
-            //    connection.ConnectionString = ConfigurationManager.ConnectionStrings[Constants.MySql].ConnectionString;
-            //    this.ViewData(connection);
-            //}
+            else if (Registry.LocalMachine.OpenSubKey(Constants.SqlServerRegistry, false) == null)
+            {
+                connection = pickerFactory.CreateDbClasses(Constants.MySqlClient).ConnectToDatabase(
+                    ConfigurationManager.ConnectionStrings[Constants.MySql]);
+                connection.ConnectionString = ConfigurationManager.ConnectionStrings[Constants.MySql].ConnectionString;
+                lvUsers.ItemsSource = new Utility().ExecuteQuery(connection);
+            }
             else
             {
                 lvUsers.ItemsSource = new TypeTextFile.CsvFileFormat().GetTextFileFormatCsv();
@@ -73,32 +73,33 @@ namespace PersonViewer
         }
 
         
-        public void ViewData(IDbConnection database)
-        {
-            try
-            {
-                using (IDbCommand command = database.CreateCommand())
-                {
-                    database.Open();
+        //public void ViewData(IDbConnection database)
+        //{
+        //    try
+        //    {
+        //        List<Person> list = new List<Person>();
+        //        using (IDbCommand command = database.CreateCommand())
+        //        {
+        //            database.Open();
 
-                    command.CommandType = CommandType.Text;
-                    command.CommandText = "SELECT * FROM dbo.Person";
+        //            command.CommandType = CommandType.Text;
+        //            command.CommandText = "SELECT * FROM Person";
 
-                    using (IDataReader reader = command.ExecuteReader())
-                    {
-                        List<Person> list = new List<Person>();
+        //            using (IDataReader reader = command.ExecuteReader())
+        //            {
+                        
 
-                        while (reader.Read())
-                            list.Add(new Person { Id = int.Parse(reader[0].ToString()), Name = reader[1].ToString() });
-                        lvUsers.ItemsSource = list;
-                    }
-                }
-            }
-            catch (NullReferenceException nullException)
-            {
-                MessageBox.Show(nullException.Message);
-            }
-        }
+        //                while (reader.Read())
+        //                    list.Add(new Person { Id = int.Parse(reader[0].ToString()), Name = reader[1].ToString() });
+        //                lvUsers.ItemsSource = list;
+        //            }
+        //        }
+        //    }
+        //    catch (NullReferenceException nullException)
+        //    {
+        //        MessageBox.Show(nullException.Message);
+        //    }
+        //}
 
         
 
