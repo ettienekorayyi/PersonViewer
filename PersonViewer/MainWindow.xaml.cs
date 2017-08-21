@@ -26,6 +26,7 @@ using PersonViewer.Common;
 using PersonViewer.Databases;
 using PersonViewer.Interfaces;
 using MySql.Data.MySqlClient;
+using System.ComponentModel;
 
 namespace PersonViewer
 {
@@ -35,9 +36,18 @@ namespace PersonViewer
     /// https://www.codeproject.com/Articles/55890/Don-t-hard-code-your-DataProviders
     /// https://msdn.microsoft.com/en-us/library/ms971499.aspx
     /// https://blogs.msmvps.com/deborahk/dal-using-a-data-provider-factory/
+    /// Xampp/MySql:
+    /// https://praveenpuglia.com/make-wamp-work-on-windows-10-technical-preview/
+    /// https://stackoverflow.com/questions/13607334/when-storing-a-mysql-connection-string-in-app-config-what-value-should-the-prov
+    /// https://www.codeproject.com/Tips/423233/How-to-Connect-to-MySQL-Using-Csharp
+    /// https://www.digitalocean.com/community/tutorials/how-to-create-a-new-user-and-grant-permissions-in-mysql
+    /// https://stackoverflow.com/questions/39442151/authentication-to-host-localhost-for-user-root-using-method-mysql-native-pa
+    /// http://www.complete-concrete-concise.com/web-tools/adding-a-new-user-to-a-mysql-database-in-xampp
     /// </summary>
     public partial class MainWindow : Window
     {
+        public DbPickerFactory pickerFactory { get; set; }
+        public IDbConnection connection { get; set; }
         public MainWindow()
         {
             InitializeComponent();
@@ -45,63 +55,45 @@ namespace PersonViewer
 
         private void lvUsers_Loaded(object sender, RoutedEventArgs e)
         {
-            DbPickerFactory pickerFactory = new DbPickerFactory();
-            IDbConnection connection = null;
+            pickerFactory = new DbPickerFactory();
+            
+            if (rdBtnSqlServer.IsChecked == true)
+                this.QuerySqlServer();
+        }
 
-            // To check the csv on the else statement, just make the if condition == to null
-            if (Registry.LocalMachine.OpenSubKey(Constants.SqlServerRegistry, false) != null)
-            {
-                connection = pickerFactory.CreateDbClasses(Constants.SqlServerClient).ConnectToDatabase(
-                    ConfigurationManager.ConnectionStrings[Constants.SqlServer]);
-                connection.ConnectionString = ConfigurationManager.ConnectionStrings[Constants.SqlServer].ConnectionString;
-                lvUsers.ItemsSource = new Utility().ExecuteQuery(connection);
-            }
-            else if (Registry.LocalMachine.OpenSubKey(Constants.SqlServerRegistry, false) == null)
+
+        private void rdBtnCsv_Click(object sender, RoutedEventArgs e)
+        {
+            ICollectionView view = CollectionViewSource.GetDefaultView(lvUsers.ItemsSource);
+            lvUsers.ItemsSource = new TypeTextFile.CsvFileFormat().GetTextFileFormatCsv();
+            view.Refresh();
+        }
+
+        private void rdBtnMySql_Click(object sender, RoutedEventArgs e)
+        {
+            pickerFactory = new DbPickerFactory();
+
+            if (rdBtnMySql.IsChecked == true)
             {
                 connection = pickerFactory.CreateDbClasses(Constants.MySqlClient).ConnectToDatabase(
                     ConfigurationManager.ConnectionStrings[Constants.MySql]);
                 connection.ConnectionString = ConfigurationManager.ConnectionStrings[Constants.MySql].ConnectionString;
                 lvUsers.ItemsSource = new Utility().ExecuteQuery(connection);
             }
-            else
-            {
-                lvUsers.ItemsSource = new TypeTextFile.CsvFileFormat().GetTextFileFormatCsv();
-            }
-
-            
-            
         }
 
-        
-        //public void ViewData(IDbConnection database)
-        //{
-        //    try
-        //    {
-        //        List<Person> list = new List<Person>();
-        //        using (IDbCommand command = database.CreateCommand())
-        //        {
-        //            database.Open();
+        private void rdBtnSqlServer_Click(object sender, RoutedEventArgs e)
+        {
+            if (rdBtnSqlServer.IsChecked == true)
+                this.QuerySqlServer();
+        }
 
-        //            command.CommandType = CommandType.Text;
-        //            command.CommandText = "SELECT * FROM Person";
-
-        //            using (IDataReader reader = command.ExecuteReader())
-        //            {
-                        
-
-        //                while (reader.Read())
-        //                    list.Add(new Person { Id = int.Parse(reader[0].ToString()), Name = reader[1].ToString() });
-        //                lvUsers.ItemsSource = list;
-        //            }
-        //        }
-        //    }
-        //    catch (NullReferenceException nullException)
-        //    {
-        //        MessageBox.Show(nullException.Message);
-        //    }
-        //}
-
-        
-
+        private void QuerySqlServer()
+        {
+            connection = pickerFactory.CreateDbClasses(Constants.SqlServerClient).ConnectToDatabase(
+                    ConfigurationManager.ConnectionStrings[Constants.SqlServer]);
+            connection.ConnectionString = ConfigurationManager.ConnectionStrings[Constants.SqlServer].ConnectionString;
+            lvUsers.ItemsSource = new Utility().ExecuteQuery(connection);
+        }
     }
 }

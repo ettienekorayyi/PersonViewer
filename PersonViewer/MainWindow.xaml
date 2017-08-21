@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="MainWindow" Height="338.06" Width="380.224">
     <Grid Background="#FFCFA0A0">
-        <ListView x:Name="lvUsers" HorizontalAlignment="Left" Height="161" Margin="70,66,0,0" VerticalAlignment="Top" Width="215" Loaded="lvUsers_Loaded">
+        <ListView x:Name="lvUsers" HorizontalAlignment="Left" Height="161" Margin="70,43,0,0" VerticalAlignment="Top" Width="215" Loaded="lvUsers_Loaded">
             <ListView.View>
                 <GridView>
                     <GridViewColumn Header="ID" Width="70" DisplayMemberBinding="{Binding Id}"/>
@@ -11,6 +11,25 @@
                 </GridView>
             </ListView.View>
         </ListView>
-
+        <RadioButton 
+            x:Name="rdBtnSqlServer" 
+            Content="Sql Server" 
+            HorizontalAlignment="Left" 
+            Margin="125,231,0,0" 
+            VerticalAlignment="Top" 
+            IsChecked="True" Click="rdBtnSqlServer_Click"/>
+        <RadioButton 
+            x:Name="rdBtnMySql" 
+            Content="MySql" 
+            HorizontalAlignment="Left" 
+            Margin="125,251,0,0" 
+            VerticalAlignment="Top" Click="rdBtnMySql_Click" 
+            />
+        <RadioButton 
+            x:Name="rdBtnCsv" 
+            Content="Csv" 
+            HorizontalAlignment="Left" 
+            Margin="125,270,0,0" 
+            VerticalAlignment="Top" Click="rdBtnCsv_Click"/>
     </Grid>
 </Window>
