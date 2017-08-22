@@ -9,10 +9,16 @@ using System.Threading.Tasks;
 using System.Data;
 using System.Windows;
 
+using PersonViewer.FactoryPattern;
+using System.Configuration;
+
 namespace PersonViewer.Common
 {
     public class Utility
     {
+        public DbPickerFactory pickerFactory { get; set; }
+        public IDbConnection connection { get; set; }
+
         public List<Person> ExecuteQuery(IDbConnection database)
         {
             try
@@ -40,5 +46,25 @@ namespace PersonViewer.Common
 
             return null;
         }
+
+        public List<Person> UseMySqlClientDataSource()
+        {
+            pickerFactory = new DbPickerFactory();
+
+            connection = pickerFactory.CreateDbClasses(Constants.MySqlClient).ConnectToDatabase(
+                    ConfigurationManager.ConnectionStrings[Constants.MySql]);
+            connection.ConnectionString = ConfigurationManager.ConnectionStrings[Constants.MySql].ConnectionString;
+            return new Utility().ExecuteQuery(connection);
+        }
+
+        public List<Person> UseSqlServerClientDataSource()
+        {
+            pickerFactory = new DbPickerFactory();
+            connection = pickerFactory.CreateDbClasses(Constants.SqlServerClient).ConnectToDatabase(
+                    ConfigurationManager.ConnectionStrings[Constants.SqlServer]);
+            connection.ConnectionString = ConfigurationManager.ConnectionStrings[Constants.SqlServer].ConnectionString;
+            return new Utility().ExecuteQuery(connection);
+        }
+
     }
 }

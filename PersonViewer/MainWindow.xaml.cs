@@ -14,19 +14,18 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using PersonViewer.Model;
 
-using System.Configuration;
 using System.Data;
 using Microsoft.Win32;
 using PersonViewer.FactoryPattern;
 using System.Data.Common;
 using PersonViewer.Common;
-//using System.Data.OleDb;
 
-//using System.IO;
 using PersonViewer.Databases;
 using PersonViewer.Interfaces;
 using MySql.Data.MySqlClient;
 using System.ComponentModel;
+
+//using System.Configuration;
 
 namespace PersonViewer
 {
@@ -43,6 +42,7 @@ namespace PersonViewer
     /// https://www.digitalocean.com/community/tutorials/how-to-create-a-new-user-and-grant-permissions-in-mysql
     /// https://stackoverflow.com/questions/39442151/authentication-to-host-localhost-for-user-root-using-method-mysql-native-pa
     /// http://www.complete-concrete-concise.com/web-tools/adding-a-new-user-to-a-mysql-database-in-xampp
+    /// To access phpmyadmin type: http://localhost:9080/phpmyadmin/
     /// </summary>
     public partial class MainWindow : Window
     {
@@ -54,11 +54,8 @@ namespace PersonViewer
         }
 
         private void lvUsers_Loaded(object sender, RoutedEventArgs e)
-        {
-            pickerFactory = new DbPickerFactory();
-            
-            if (rdBtnSqlServer.IsChecked == true)
-                this.QuerySqlServer();
+        {   
+            lvUsers.ItemsSource = new Utility().UseSqlServerClientDataSource();
         }
 
 
@@ -71,29 +68,14 @@ namespace PersonViewer
 
         private void rdBtnMySql_Click(object sender, RoutedEventArgs e)
         {
-            pickerFactory = new DbPickerFactory();
-
-            if (rdBtnMySql.IsChecked == true)
-            {
-                connection = pickerFactory.CreateDbClasses(Constants.MySqlClient).ConnectToDatabase(
-                    ConfigurationManager.ConnectionStrings[Constants.MySql]);
-                connection.ConnectionString = ConfigurationManager.ConnectionStrings[Constants.MySql].ConnectionString;
-                lvUsers.ItemsSource = new Utility().ExecuteQuery(connection);
-            }
+            lvUsers.ItemsSource = new Utility().UseMySqlClientDataSource();
         }
-
+        
         private void rdBtnSqlServer_Click(object sender, RoutedEventArgs e)
         {
-            if (rdBtnSqlServer.IsChecked == true)
-                this.QuerySqlServer();
+            lvUsers.ItemsSource = new Utility().UseSqlServerClientDataSource();
         }
 
-        private void QuerySqlServer()
-        {
-            connection = pickerFactory.CreateDbClasses(Constants.SqlServerClient).ConnectToDatabase(
-                    ConfigurationManager.ConnectionStrings[Constants.SqlServer]);
-            connection.ConnectionString = ConfigurationManager.ConnectionStrings[Constants.SqlServer].ConnectionString;
-            lvUsers.ItemsSource = new Utility().ExecuteQuery(connection);
-        }
+        
     }
 }
