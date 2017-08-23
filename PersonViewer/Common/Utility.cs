@@ -47,22 +47,13 @@ namespace PersonViewer.Common
             return null;
         }
 
-        public List<Person> UseMySqlClientDataSource()
+        public List<Person> UseDataSource(string dbType)
         {
             pickerFactory = new DbPickerFactory();
 
-            connection = pickerFactory.CreateDbClasses(Constants.MySqlClient).ConnectToDatabase(
+            connection = pickerFactory.CreateDbClasses(dbType).ConnectToDatabase(
                     ConfigurationManager.ConnectionStrings[Constants.MySql]);
-            connection.ConnectionString = ConfigurationManager.ConnectionStrings[Constants.MySql].ConnectionString;
-            return new Utility().ExecuteQuery(connection);
-        }
-
-        public List<Person> UseSqlServerClientDataSource()
-        {
-            pickerFactory = new DbPickerFactory();
-            connection = pickerFactory.CreateDbClasses(Constants.SqlServerClient).ConnectToDatabase(
-                    ConfigurationManager.ConnectionStrings[Constants.SqlServer]);
-            connection.ConnectionString = ConfigurationManager.ConnectionStrings[Constants.SqlServer].ConnectionString;
+            connection.ConnectionString = ConfigurationManager.ConnectionStrings[dbType].ConnectionString;
             return new Utility().ExecuteQuery(connection);
         }
 

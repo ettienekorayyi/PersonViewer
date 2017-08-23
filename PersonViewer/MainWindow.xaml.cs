@@ -55,7 +55,7 @@ namespace PersonViewer
 
         private void lvUsers_Loaded(object sender, RoutedEventArgs e)
         {   
-            lvUsers.ItemsSource = new Utility().UseSqlServerClientDataSource();
+            lvUsers.ItemsSource = new Utility().UseDataSource(Constants.SqlServer);
         }
 
 
@@ -68,12 +68,12 @@ namespace PersonViewer
 
         private void rdBtnMySql_Click(object sender, RoutedEventArgs e)
         {
-            lvUsers.ItemsSource = new Utility().UseMySqlClientDataSource();
+            lvUsers.ItemsSource = new Utility().UseDataSource(Constants.MySql);
         }
         
         private void rdBtnSqlServer_Click(object sender, RoutedEventArgs e)
         {
-            lvUsers.ItemsSource = new Utility().UseSqlServerClientDataSource();
+            lvUsers.ItemsSource = new Utility().UseDataSource(Constants.SqlServer);
         }
 
         
