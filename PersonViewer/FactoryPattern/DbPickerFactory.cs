@@ -8,13 +8,14 @@ using System.Configuration;
 using PersonViewer.Common;
 using PersonViewer.Interfaces;
 using PersonViewer.Databases;
+using PersonViewer.TypeTextFile;
 
 
 namespace PersonViewer.FactoryPattern
 {
     public class DbPickerFactory
     {
-        public IDbConnect CreateDbClasses(string dbClasses)
+        public IDbCustomConnector CreateDbClasses(string dbClasses)
         {
             switch (dbClasses)
             {
@@ -22,6 +23,8 @@ namespace PersonViewer.FactoryPattern
                     return new SqlServerDatabase();
                 case Constants.MySqlClient:
                     return new MySqlDatabase();
+                case Constants.OleDbClient:
+                    return new CsvFileFormat();
             }
             return null;
         }

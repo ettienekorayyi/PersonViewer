@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PersonViewer.Model;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
@@ -9,8 +10,10 @@ using System.Threading.Tasks;
 
 namespace PersonViewer.Interfaces
 {
-    public interface IDbConnect
+    public interface IDbCustomConnector
     {
         IDbConnection ConnectToDatabase(ConnectionStringSettings connectionString);
+
+        List<Person> ExecuteQuery(IDbConnection database);
     }
 }

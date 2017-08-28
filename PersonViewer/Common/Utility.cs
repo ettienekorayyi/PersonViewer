@@ -11,50 +11,27 @@ using System.Windows;
 
 using PersonViewer.FactoryPattern;
 using System.Configuration;
+using System.IO;
+using System.Data.OleDb;
+using PersonViewer.Databases;
+using PersonViewer.Interfaces;
 
 namespace PersonViewer.Common
 {
     public class Utility
     {
-        public DbPickerFactory pickerFactory { get; set; }
-        public IDbConnection connection { get; set; }
+        public DbPickerFactory pickerFactory { get; private set; }
+        public IDbConnection connection { get; private set; }
 
-        public List<Person> ExecuteQuery(IDbConnection database)
-        {
-            try
-            {
-                List<Person> list = new List<Person>();
-                using (IDbCommand command = database.CreateCommand())
-                {
-                    database.Open();
-
-                    command.CommandType = CommandType.Text;
-                    command.CommandText = "SELECT * FROM Person";
-
-                    using (IDataReader reader = command.ExecuteReader())
-                    {
-                        while (reader.Read())
-                            list.Add(new Person { Id = int.Parse(reader[0].ToString()), Name = reader[1].ToString() });
-                    }
-                }
-                return list;
-            }
-            catch (NullReferenceException nullException)
-            {
-                MessageBox.Show(nullException.Message);
-            }
-
-            return null;
-        }
-
-        public List<Person> UseDataSource(string dbType)
+        public List<Person> UseDataSource(string dbType,string connectionString, IDbCustomConnector client)
         {
             pickerFactory = new DbPickerFactory();
-
-            connection = pickerFactory.CreateDbClasses(dbType).ConnectToDatabase(
-                    ConfigurationManager.ConnectionStrings[Constants.MySql]);
-            connection.ConnectionString = ConfigurationManager.ConnectionStrings[dbType].ConnectionString;
-            return new Utility().ExecuteQuery(connection);
+            
+            connection = pickerFactory.CreateDbClasses(dbType)
+                .ConnectToDatabase(ConfigurationManager.ConnectionStrings[connectionString]);
+            connection.ConnectionString = ConfigurationManager.ConnectionStrings[connectionString]
+                .ConnectionString;
+            return client.ExecuteQuery(connection);
         }
 
     }
